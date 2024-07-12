@@ -2,9 +2,9 @@ import { z } from "zod";
 import { getBaseURL } from "../utils";
 import { AzureOpenAIConfigSchema, DEFAULT_AZURE_OPENAI_CONFIG } from "./azure";
 import { DEFAULT_GEMINI_CONFIG, GeminiConfigSchema } from "./gemini";
-import { DEFAULT_GROQ_CONFIG, GroqConfigSchema } from "./groq";
 import { DEFAULT_OLLAMA_CONFIG, OllamaConfigSchema } from "./ollama";
 import { DEFAULT_OPENAI_CONFIG, OpenAIConfigSchema } from "./openai";
+import { DEFAULT_TSYSTEMS_CONFIG, TSystemsConfigSchema } from "./t-systems";
 
 export const ModelConfigSchema = z
   .union([
@@ -12,7 +12,7 @@ export const ModelConfigSchema = z
     GeminiConfigSchema,
     OllamaConfigSchema,
     AzureOpenAIConfigSchema,
-    GroqConfigSchema,
+    TSystemsConfigSchema,
   ])
   .refine((data) => {
     switch (data.model_provider) {
@@ -24,8 +24,8 @@ export const ModelConfigSchema = z
         return OllamaConfigSchema.parse(data);
       case "azure-openai":
         return AzureOpenAIConfigSchema.parse(data);
-      case "groq":
-        return GroqConfigSchema.parse(data);
+      case "t-systems":
+        return TSystemsConfigSchema.parse(data);
       default:
         return true;
     }
@@ -51,8 +51,8 @@ export const supportedProviders = [
     value: "azure-openai",
   },
   {
-    name: "Groq",
-    value: "groq",
+    name: "T-Systems LLMHub",
+    value: "t-systems",
   },
 ];
 
@@ -66,8 +66,8 @@ export const getDefaultProviderConfig = (provider: string) => {
       return DEFAULT_GEMINI_CONFIG;
     case "azure-openai":
       return DEFAULT_AZURE_OPENAI_CONFIG;
-    case "groq":
-      return DEFAULT_GROQ_CONFIG;
+    case "t-systems":
+      return DEFAULT_TSYSTEMS_CONFIG;
     default:
       throw new Error(`Provider ${provider} not supported`);
   }

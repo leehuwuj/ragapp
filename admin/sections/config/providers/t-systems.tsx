@@ -11,37 +11,50 @@ import { PasswordInput } from "@/components/ui/password-input";
 import { UseFormReturn } from "react-hook-form";
 import { ModelForm } from "./shared";
 
-export const OpenAIForm = ({
+const SUPPORTED_MODELS = [
+  "gpt-35-turbo",
+  "gpt-4-32k-1",
+  "gpt-4-32k-canada",
+  "gpt-4-32k-france",
+  "gpt-4-turbo-128k-france",
+  "Llama2-70b-Instruct",
+  "Llama-3-70B-Instruct",
+  "Mixtral-8x7B-Instruct-v0.1",
+  "mistral-large-32k-france",
+  "CodeLlama-2",
+];
+
+const EMBEDDING_MODELS = [
+  "text-embedding-ada-002",
+  "text-embedding-ada-002-france",
+  "jina-embeddings-v2-base-de",
+  "jina-embeddings-v2-base-code",
+  "text-embedding-bge-m3",
+];
+
+export const TSystemsForm = ({
   form,
   defaultValues,
 }: {
   form: UseFormReturn;
   defaultValues: any;
 }) => {
-  const supportingModels = ["gpt-3.5-turbo", "gpt-4", "gpt-4o"];
-  const embeddingModels = ["text-embedding-3-small", "text-embedding-3-large"];
-
   return (
     <>
       <FormField
         control={form.control}
-        name="openai_api_key"
+        name="t_systems_llmhub_api_key"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>OpenAI API Key (*)</FormLabel>
+            <FormLabel>LLMHub API Key (*)</FormLabel>
             <FormControl>
               <PasswordInput
-                placeholder={defaultValues.openai_api_key ?? "sk-xxx"}
+                placeholder={defaultValues.t_systems_llmhub_api_key}
                 showCopy
                 {...field}
               />
             </FormControl>
-            <FormDescription>
-              Get your API key from{" "}
-              <a href="https://platform.openai.com/api-keys" target="_blank">
-                https://platform.openai.com/api-keys
-              </a>
-            </FormDescription>
+            <FormDescription>Enter your API key for the LLMHub</FormDescription>
             <FormMessage />
           </FormItem>
         )}
@@ -51,14 +64,14 @@ export const OpenAIForm = ({
           <ModelForm
             form={form}
             defaultValue={defaultValues.model}
-            supportedModels={supportingModels}
+            supportedModels={SUPPORTED_MODELS}
           />
         </div>
         <div className="w-1/2">
           <ModelForm
             form={form}
             defaultValue={defaultValues.embedding_model}
-            supportedModels={embeddingModels}
+            supportedModels={EMBEDDING_MODELS}
             title="Embedding Model"
             description="Select a text embedding model to embed text."
             name="embedding_model"
@@ -67,20 +80,21 @@ export const OpenAIForm = ({
       </div>
       <FormField
         control={form.control}
-        name="openai_api_base"
+        name="t_systems_llmhub_api_base"
         render={({ field }) => (
           <FormItem>
-            <FormLabel>OpenAI API Base URL</FormLabel>
+            <FormLabel>LLMHub API Base URL</FormLabel>
             <FormControl>
               <Input
                 placeholder={
-                  defaultValues.openai_api_base ?? "https://api.openai.com/v1"
+                  defaultValues.t_systems_llmhub_api_base ??
+                  "https://llm-server.llmhub.t-systems.net/v2"
                 }
                 {...field}
               />
             </FormControl>
             <FormDescription>
-              Optional, set this if you are using a custom OpenAI API endpoint.
+              Optional, set this if you are using a custom LLMHub API endpoint.
             </FormDescription>
             <FormMessage />
           </FormItem>
