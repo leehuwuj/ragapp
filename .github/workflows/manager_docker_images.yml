@@ -13,23 +13,12 @@ jobs:
   release_tagged_image:
     if: startsWith(github.ref, 'refs/tags/v')
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: "src/manager"
     permissions:
       contents: write
     steps:
-      - name: Check out the code
-        uses: actions/checkout@v2
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to Docker Hub Container Registry
-        uses: docker/login-action@v3
-        with:
-          username: marcusschiesser
-          password: ${{ secrets.DOCKER_TOKEN }}
+      - <<: *checkout_code
+      - <<: *setup_buildx
+      - <<: *login_docker_hub
 
       - name: Extract tag name
         id: tag
@@ -38,8 +27,8 @@ jobs:
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
-          context: .
-          file: ./Dockerfile
+          context: ./src/manager
+          file: ./src/manager/Dockerfile
           push: true
           platforms: linux/amd64,linux/arm64/v8
           tags: |
@@ -57,31 +46,37 @@ jobs:
   release_dev_image:
     if: github.ref == 'refs/heads/main'
     runs-on: ubuntu-latest
-    defaults:
-      run:
-        working-directory: "src/manager"
     permissions:
       contents: read
       packages: write
     steps:
-      - name: Check out the code
-        uses: actions/checkout@v2
-
-      - name: Set up Docker Buildx
-        uses: docker/setup-buildx-action@v3
-
-      - name: Log in to GitHub Container Registry
-        uses: docker/login-action@v3
-        with:
-          registry: ghcr.io
-          username: ${{ github.actor }}
-          password: ${{ secrets.GITHUB_TOKEN }}
+      - <<: *checkout_code
+      - <<: *setup_buildx
+      - <<: *login_docker_hub
 
       - name: Build and push Docker image
         uses: docker/build-push-action@v6
         with:
-          context: .
-          file: ./Dockerfile
+          context: ./src/manager
+          file: ./src/manager/Dockerfile
           push: true
           platforms: linux/amd64,linux/arm64/v8
           tags: ghcr.io/${{ github.repository }}:latest
+
+
+# Common steps
+steps:
+  checkout_code: &checkout_code
+    - name: Check out the code
+      uses: actions/checkout@v2
+
+  setup_buildx: &setup_buildx
+    - name: Set up Docker Buildx
+      uses: docker/setup-buildx-action@v3
+
+  login_docker_hub: &login_docker_hub
+    - name: Log in to Docker Hub Container Registry
+      uses: docker/login-action@v3
+      with:
+        username: marcusschiesser
+        password: ${{ secrets.DOCKER_TOKEN }}
