@@ -8,7 +8,7 @@ on:
       - v*
     paths:
       - 'src/manager/**'
-      - 'workflow-templates/manager_docker_images.yml'
+      - '.github/workflows/manager_docker_images.yml'
 
 jobs:
   release_tagged_image:
